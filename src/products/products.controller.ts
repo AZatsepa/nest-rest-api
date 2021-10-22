@@ -3,12 +3,19 @@ import {
   Param, Body, Redirect, HttpCode, HttpStatus, Header,
   Req, Res
  } from '@nestjs/common';
+ import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 // import { Response, Request } from 'express';
 import { ProductsService } from './products.service';
 import { Product } from './schemas/product.schema'
 
+@ApiTags('products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {
@@ -35,11 +42,16 @@ export class ProductsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Header('Cache-Control', 'none')
+  @ApiOperation({ summary: 'Create product' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 201, description: 'Created' })
   create(@Body() createProductDto: CreateProductDto): Promise<Product> {
     return this.productsService.create(createProductDto);
   }
 
   @Put(':id')
+  @ApiOperation({ summary: 'Update product' })
+  @ApiResponse({ status: 200, description: 'Updated' })
   update(@Body() updateProductDto: UpdateProductDto, @Param('id') id: string): Promise<Product> {
     return this.productsService.update(id, updateProductDto);
   }
